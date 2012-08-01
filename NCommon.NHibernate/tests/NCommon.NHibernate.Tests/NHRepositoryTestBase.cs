@@ -30,7 +30,7 @@ namespace NCommon.Data.NHibernate.Tests
         public virtual void SetUp()
         {
             OrdersDomainFactory = Fluently.Configure()
-                .Database(MsSqlConfiguration.MsSql2005
+                .Database(MsSqlConfiguration.MsSql2008
                               .ConnectionString(x => x.FromConnectionStringWithKey("testdb")))
                 .Mappings(mappings => mappings.FluentMappings.AddFromAssemblyOf<Order>())
                 .ExposeConfiguration(config =>
@@ -42,7 +42,7 @@ namespace NCommon.Data.NHibernate.Tests
                 .BuildSessionFactory();
 
             HRDomainFactory = Fluently.Configure()
-                .Database(MsSqlConfiguration.MsSql2005
+                .Database(MsSqlConfiguration.MsSql2008
                             .ConnectionString(x => x.FromConnectionStringWithKey("testdb")))
                 .Mappings(mappings => mappings.FluentMappings.AddFromAssemblyOf<SalesPerson>())
                 .ExposeConfiguration(config =>

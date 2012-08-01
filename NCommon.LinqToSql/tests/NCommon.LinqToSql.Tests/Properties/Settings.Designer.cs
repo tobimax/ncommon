@@ -26,7 +26,7 @@ namespace NCommon.Data.LinqToSql.Tests.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(local)\\SQLExpress;Initial Catalog=DevelopmentDB;Integrated Security=" +
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\SQLSERVER_002;Initial Catalog=DevelopmentDB;Integrated Security=" +
             "True")]
         public string DevelopmentDBConnectionString {
             get {
