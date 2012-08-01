@@ -15,10 +15,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
 using System.Linq.Expressions;
-using NCommon.Extensions;
 using Microsoft.Practices.ServiceLocation;
 
 namespace NCommon.Data.LinqToSql
@@ -31,6 +31,7 @@ namespace NCommon.Data.LinqToSql
     {
         readonly ILinqToSqlSession _privateSession;
         readonly DataLoadOptions _loadOptions = new DataLoadOptions();
+        private MergeOption _mergeOption;
 
         /// <summary>
         /// Default Constructor.
@@ -42,8 +43,14 @@ namespace NCommon.Data.LinqToSql
                 return;
 
             var sessions = ServiceLocator.Current.GetAllInstances<ILinqToSqlSession>();
-            if (sessions != null && sessions.Count() > 0)
-                _privateSession = sessions.FirstOrDefault();
+
+            if (sessions != null)
+            {
+                var linqToSqlSessions = sessions as List<ILinqToSqlSession> ?? sessions.ToList();
+
+                if (linqToSqlSessions.Any())
+                    _privateSession = linqToSqlSessions.FirstOrDefault();
+            }
         }
 
         /// <summary>
@@ -54,7 +61,7 @@ namespace NCommon.Data.LinqToSql
             get
             {
                 return _privateSession ?? UnitOfWork<LinqToSqlUnitOfWork>().GetSession<TEntity>();
-            }   
+            }
         }
 
         /// <summary>
@@ -69,6 +76,17 @@ namespace NCommon.Data.LinqToSql
         }
 
         /// <summary>
+        /// Gets or sets the merge option.
+        /// </summary>
+        /// <value>The merge option.</value>
+        /// <remarks></remarks>
+        public override MergeOption MergeOption
+        {
+            get { return _mergeOption; }
+            set { _mergeOption = value; }
+        }
+
+        /// <summary>
         /// Gets the <see cref="IQueryable{TEntity}"/> used by the <see cref="RepositoryBase{TEntity}"/> 
         /// to execute Linq queries.
         /// </summary>
@@ -80,10 +98,14 @@ namespace NCommon.Data.LinqToSql
         {
             get
             {
+                if (_mergeOption == MergeOption.NoTracking)
+                    DataContext.Context.ObjectTrackingEnabled = false;
+
                 DataContext.Context.LoadOptions = _loadOptions;
                 return Table;
             }
         }
+
 
         /// <summary>
         /// Adds a transient instance of <see cref="TEntity"/> to be tracked
@@ -91,7 +113,7 @@ namespace NCommon.Data.LinqToSql
         /// </summary>
         /// <param name="entity"></param>
         /// <remarks>
-        /// The Add method replaces the existing <see cref="RepositoryBase{TEntity}.Save"/> method, which will
+        /// The Add method replaces the existing <see cref="RepositoryBase{TEntity}.Add"/> method, which will
         /// eventually be removed from the public API.
         /// </remarks>
         public override void Add(TEntity entity)
@@ -124,11 +146,44 @@ namespace NCommon.Data.LinqToSql
         /// Attaches a detached entity, previously detached via the <see cref="IRepository{TEntity}.Detach"/> method.
         /// </summary>
         /// <param name="entity">The entity instance to attach back to the repository.</param>
-        /// <exception cref="NotImplementedException">Implentors should throw the NotImplementedException if Attaching
+        /// <exception cref="NotImplementedException">Implementors should throw the NotImplementedException if Attaching
         /// entities is not supported.</exception>
         public override void Attach(TEntity entity)
         {
             Table.Attach(entity);
+        }
+
+        /// <summary>
+        /// Attaches a detached entity, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.
+        /// </summary>
+        /// <param name="entity">The modified entity instance to attach back to the repository.</param>
+        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
+        /// entities is not supported.</exception>
+        public override void Attach(TEntity entity, TEntity orignial)
+        {
+            Table.Attach(entity, orignial);
+        }
+
+        /// <summary>
+        /// Attaches a collection of detached entities, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.all.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entities">The entities.</param>
+        public override void AttachAll(IEnumerable<TEntity> entities)
+        {
+            Table.AttachAll(entities);
+        }
+
+        /// <summary>
+        /// Attaches a collection of detached entities as modified, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.all.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entities">The entities.</param>
+        /// <param name="asModified">if set to <c>true</c> [as modified].</param>
+        public override void AttachAll(IEnumerable<TEntity> entities, bool asModified)
+        {
+            Table.AttachAll(entities, asModified);
         }
 
         /// <summary>

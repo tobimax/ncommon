@@ -30,6 +30,14 @@ namespace NCommon.Data
     public interface IRepository<TEntity> : IQueryable<TEntity>
     {
         /// <summary>
+        /// Determines the synchronization option for sending or receiving entities. 
+        /// </summary>
+        /// <value>
+        /// The merge option.
+        /// </value>
+        MergeOption MergeOption { get; set; }
+        
+        /// <summary>
         /// Gets the a <see cref="IUnitOfWork"/> of <typeparamref name="T"/> that
         /// the repository will use to query the underlying store.
         /// </summary>
@@ -64,9 +72,31 @@ namespace NCommon.Data
         /// Attaches a detached entity, previously detached via the <see cref="Detach"/> method.
         /// </summary>
         /// <param name="entity">The entity instance to attach back to the repository.</param>
-        /// <exception cref="NotSupportedException">Implentors should throw the NotImplementedException if Attaching
+        /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
         /// entities is not supported.</exception>
         void Attach(TEntity entity);
+
+        /// <summary>
+        /// Attaches a detached entity, previously detached via the <see cref="Detach"/> method.
+        /// </summary>
+        /// <param name="entity">The modified entity instance to attach back to the repository.</param>
+        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
+        /// entities is not supported.</exception>
+        void Attach(TEntity entity, TEntity orignial);
+
+        /// <summary>
+        /// Attaches a collection of detached entities, previously detached via the <see cref="Detach"/> method.all.
+        /// </summary>
+        /// <param name="entities">The entities.</param>
+        void AttachAll(IEnumerable<TEntity> entities);
+
+        /// <summary>
+        /// Attaches a collection of detached entities as modified, previously detached via the <see cref="Detach"/> method.all.
+        /// </summary>
+        /// <param name="entities">The entities.</param>
+        /// <param name="asModified">if set to <c>true</c> [as modified].</param>
+        void AttachAll(IEnumerable<TEntity> entities, bool asModified);
 
         /// <summary>
         /// Refreshes a entity instance.

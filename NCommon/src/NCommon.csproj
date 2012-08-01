@@ -76,6 +76,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
@@ -117,6 +118,7 @@
     <Compile Include="Configuration\DefaultUnitOfWorkConfiguration.cs" />
     <Compile Include="Data\ITransactionManager.cs" />
     <Compile Include="Data\IUnitOfWorkScope.cs" />
+    <Compile Include="Data\MergeOption.cs" />
     <Compile Include="Data\RepositoryWrapperBase.cs" />
     <Compile Include="Data\UnitOfWorkManager.cs" />
     <Compile Include="Data\TransactionMode.cs" />

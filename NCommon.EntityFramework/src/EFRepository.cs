@@ -16,14 +16,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using Microsoft.Practices.ServiceLocation;
-using NCommon.Expressions;
-using NCommon.Extensions;
 
 namespace NCommon.Data.EntityFramework
 {
@@ -35,18 +32,26 @@ namespace NCommon.Data.EntityFramework
     {
         readonly IEFSession _privateSession;
         readonly List<string> _includes = new List<string>();
+        private MergeOption _mergeOption;
 
         /// <summary>
         /// Creates a new instance of the <see cref="EFRepository{TEntity}"/> class.
         /// </summary>
         public EFRepository()
         {
-            if (ServiceLocator.Current == null) 
+            if (ServiceLocator.Current == null)
                 return;
 
             var sessions = ServiceLocator.Current.GetAllInstances<IEFSession>();
-            if (sessions != null && sessions.Count() > 0)
-                _privateSession = sessions.First();
+
+            if (sessions != null)
+            {
+                var efSessions = sessions as List<IEFSession> ?? sessions.ToList();
+
+                if (efSessions.Any())
+                    _privateSession = efSessions.First();
+            }
+
         }
 
         /// <summary>
@@ -65,6 +70,17 @@ namespace NCommon.Data.EntityFramework
         }
 
         /// <summary>
+        /// Gets or sets the merge option.
+        /// </summary>
+        /// <value>The merge option.</value>
+        /// <remarks></remarks>
+        public override MergeOption MergeOption
+        {
+            get { return _mergeOption; }
+            set { _mergeOption = value; }
+        }
+
+        /// <summary>
         /// Gets the <see cref="IQueryable{TEntity}"/> used by the <see cref="RepositoryBase{TEntity}"/> 
         /// to execute Linq queries.
         /// </summary>
@@ -76,6 +92,9 @@ namespace NCommon.Data.EntityFramework
                 var query = Session.CreateQuery<TEntity>();
                 if (_includes.Count > 0)
                     _includes.ForEach(x => query = query.Include(x));
+
+                query.MergeOption = (System.Data.Objects.MergeOption)MergeOption;
+
                 return query;
             }
         }
@@ -110,15 +129,69 @@ namespace NCommon.Data.EntityFramework
             Session.Detach(entity);
         }
 
+        ///// <summary>
+        ///// Attaches a detached entity, previously detached via the <see cref="IRepository{TEntity}.Detach"/> method.
+        ///// </summary>
+        ///// <param name="entity">The entity instance to attach back to the repository.</param>
+        ///// <exception cref="NotImplementedException">Implentors should throw the NotImplementedException if Attaching
+        ///// entities is not supported.</exception>
+        //public override void Attach(TEntity entity)
+        //{
+        //    Session.Attach(entity);
+        //}
+
         /// <summary>
         /// Attaches a detached entity, previously detached via the <see cref="IRepository{TEntity}.Detach"/> method.
         /// </summary>
         /// <param name="entity">The entity instance to attach back to the repository.</param>
-        /// <exception cref="NotImplementedException">Implentors should throw the NotImplementedException if Attaching
+        /// <exception cref="NotImplementedException">Implementors should throw the NotImplementedException if Attaching
         /// entities is not supported.</exception>
         public override void Attach(TEntity entity)
         {
             Session.Attach(entity);
+        }
+
+        /// <summary>
+        /// Attaches a detached entity, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.
+        /// </summary>
+        /// <param name="entity">The modified entity instance to attach back to the repository.</param>
+        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
+        /// entities is not supported.</exception>
+        public override void Attach(TEntity entity, TEntity orignial)
+        {
+            Session.Attach(entity);
+            Session.Context.ObjectStateManager.ChangeObjectState(entity, EntityState.Modified);
+        }
+
+        /// <summary>
+        /// Attaches a collection of detached entities, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.all.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entities">The entities.</param>
+        public override void AttachAll(IEnumerable<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                Session.Attach(entity);
+               Session.Context.ObjectStateManager.ChangeObjectState(entity, EntityState.Unchanged);
+            }
+        }
+
+        /// <summary>
+        /// Attaches a collection of detached entities as modified, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.all.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entities">The entities.</param>
+        /// <param name="asModified">if set to <c>true</c> [as modified].</param>
+        public override void AttachAll(IEnumerable<TEntity> entities, bool asModified)
+        {
+            foreach (var entity in entities)
+            {
+                Session.Attach(entity as IEntityWithKey);
+                Session.Context.ObjectStateManager.ChangeObjectState(entity, asModified ? EntityState.Modified : EntityState.Unchanged);
+            }
+
         }
 
         /// <summary>

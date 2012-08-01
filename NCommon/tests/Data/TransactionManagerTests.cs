@@ -102,7 +102,7 @@ namespace NCommon.Tests.Data
                 var parentUOW = txManager.CurrentUnitOfWork;
                 var parentTx = txManager.CurrentTransaction;
                 
-                txManager.EnlistScope(MockRepository.GenerateStub<IUnitOfWorkScope>(), TransactionMode.Supress);
+                txManager.EnlistScope(MockRepository.GenerateStub<IUnitOfWorkScope>(), TransactionMode.Suppress);
                 Assert.That(parentUOW, Is.Not.SameAs(txManager.CurrentUnitOfWork));
                 Assert.That(parentTx, Is.Not.SameAs(txManager.CurrentTransaction));
             }

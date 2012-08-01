@@ -15,8 +15,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Db4objects.Db4o;
 using Db4objects.Db4o.Linq;
 using Microsoft.Practices.ServiceLocation;
@@ -27,21 +27,26 @@ namespace NCommon.Data.Db4o
     /// Inherits from the <see cref="RepositoryBase{TEntity}"/> class to provide an implementation of a
     /// repository that uses Db4o.
     /// </summary>
-    public class Db4oRepository<TEntity> : RepositoryBase<TEntity>
+    public class Db4ORepository<TEntity> : RepositoryBase<TEntity>
     {
         readonly IObjectContainer _privateContainer;
 
         /// <summary>
         /// Default Constructor.
-        /// Creates a new instance of the <see cref="Db4oRepository{TEntity}"/> class.
+        /// Creates a new instance of the <see cref="Db4ORepository{TEntity}"/> class.
         /// </summary>
-        public Db4oRepository()
+        public Db4ORepository()
         {
             if (ServiceLocator.Current != null)
             {
                 var containers = ServiceLocator.Current.GetAllInstances<IObjectContainer>();
-                if (containers != null && containers.Count() > 0)
-                    _privateContainer = containers.FirstOrDefault();
+
+                if (containers != null)
+                {
+                    var objectContainers = containers as List<IObjectContainer> ?? containers.ToList();
+                    if (objectContainers.Any())
+                        _privateContainer = objectContainers.FirstOrDefault();
+                }
             }
             
         }
@@ -65,6 +70,17 @@ namespace NCommon.Data.Db4o
         protected override IQueryable<TEntity> RepositoryQuery
         {
             get { return ObjectContainer.Cast<TEntity>().AsQueryable(); }
+        }
+
+        /// <summary>
+        /// Gets or sets the merge option.
+        /// </summary>
+        /// <value>The merge option.</value>
+        /// <remarks></remarks>
+        public override MergeOption MergeOption
+        {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
         }
 
         public override void Add(TEntity entity)
@@ -96,8 +112,42 @@ namespace NCommon.Data.Db4o
         /// <param name="entity">The entity instance to attach back to the repository.</param>
         public override void Attach(TEntity entity)
         {
-            //Noop.
+            throw new NotSupportedException();
         }
+
+        /// <summary>
+        /// Attaches a detached entity, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.
+        /// </summary>
+        /// <param name="entity">The modified entity instance to attach back to the repository.</param>
+        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
+        /// entities is not supported.</exception>
+        public override void Attach(TEntity entity, TEntity orignial)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Attaches a collection of detached entities, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.all.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entities">The entities.</param>
+        public override void AttachAll(IEnumerable<TEntity> entities)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Attaches a collection of detached entities as modified, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.all.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entities">The entities.</param>
+        /// <param name="asModified">if set to <c>true</c> [as modified].</param>
+        public override void AttachAll(IEnumerable<TEntity> entities, bool asModified)
+        {
+            throw new NotSupportedException();
+        }
+
 
         /// <summary>
         /// Refreshes a entity instance.

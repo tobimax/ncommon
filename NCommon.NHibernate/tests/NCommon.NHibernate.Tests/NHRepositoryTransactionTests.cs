@@ -227,7 +227,7 @@ namespace NCommon.Data.NHibernate.Tests
             using (var scope = new UnitOfWorkScope())
             {
                 new NHRepository<Customer>().Add(customer);
-                using (var scope2 = new UnitOfWorkScope(TransactionMode.Supress))
+                using (var scope2 = new UnitOfWorkScope(TransactionMode.Suppress))
                 {
                     new NHRepository<Order>().Add(order);
                     scope2.Commit();

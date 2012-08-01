@@ -26,7 +26,8 @@ namespace NCommon.Data.Db4o.Tests
             if (File.Exists(_databasePath))
                 File.Delete(_databasePath);
 
-            //Configure Db4o to cascade updates on Order and Customer entities. (Since they are our Aggregate Roots)
+            // Configure Db4o to cascade updates on Order and Customer entities. (Since they are our Aggregate Roots)
+            //
             var configuration = Db4oFactory.Configure();
             configuration.ObjectClass(typeof (Order)).CascadeOnUpdate(true);
             configuration.ObjectClass(typeof (Customer)).CascadeOnDelete(true);
@@ -66,7 +67,7 @@ namespace NCommon.Data.Db4o.Tests
             };
 
             //Re-usable query to query for the matching record.
-            var queryForCustomer = new Func<Db4oRepository<Customer>, Customer>
+            var queryForCustomer = new Func<Db4ORepository<Customer>, Customer>
                 (x => (from cust in x
                        where cust.FirstName == newCustomer.FirstName && cust.LastName == newCustomer.LastName
                        select cust).FirstOrDefault()
@@ -74,7 +75,7 @@ namespace NCommon.Data.Db4o.Tests
 
             using (var scope = new UnitOfWorkScope())
             {
-                var customerRepository = new Db4oRepository<Customer>();
+                var customerRepository = new Db4ORepository<Customer>();
                 var recordCheckResult = queryForCustomer(customerRepository);
                 Assert.That(recordCheckResult, Is.Null);
 
@@ -85,7 +86,7 @@ namespace NCommon.Data.Db4o.Tests
             //Retrieve the record for deletion.
             using (var scope = new UnitOfWorkScope())
             {
-                var customerRepository = new Db4oRepository<Customer>();
+                var customerRepository = new Db4ORepository<Customer>();
                 var customerToDelete = queryForCustomer(customerRepository);
                 Assert.That(customerToDelete, Is.Not.Null);
                 customerRepository.Delete(customerToDelete);
@@ -95,7 +96,7 @@ namespace NCommon.Data.Db4o.Tests
             //Ensure customer record is deleted.
             using (new UnitOfWorkScope())
             {
-                var customerRepository = new Db4oRepository<Customer>();
+                var customerRepository = new Db4ORepository<Customer>();
                 var recordCheckResult = queryForCustomer(customerRepository);
                 Assert.That(recordCheckResult, Is.Null);
             }
@@ -115,20 +116,20 @@ namespace NCommon.Data.Db4o.Tests
                 int orderId;
                 using (new UnitOfWorkScope())
                 {
-                    var ordersRepository = new Db4oRepository<Order>();
+                    var ordersRepository = new Db4ORepository<Order>();
                     orderId = ordersRepository.Select(x => x.OrderID).First();
                 }
 
                 Assert.NotNull(orderId);
                 using (new UnitOfWorkScope())
                 {
-                    var outerRepository = new Db4oRepository<Order>();
+                    var outerRepository = new Db4ORepository<Order>();
                     var outerOrder = outerRepository.Where(x => x.OrderID == orderId).First();
                     outerOrder.OrderDate = changedOrderDate;
 
                     using (var innerScope = new UnitOfWorkScope(TransactionMode.New))
                     {
-                        var innerRepository = new Db4oRepository<Order>();
+                        var innerRepository = new Db4ORepository<Order>();
                         var innerOrder = innerRepository.Where(x => x.OrderID == orderId).First();
                         innerOrder.ShipDate = changedShipDate;
                         innerScope.Commit();
@@ -137,7 +138,7 @@ namespace NCommon.Data.Db4o.Tests
 
                 using (new UnitOfWorkScope())
                 {
-                    var ordersRepository = new Db4oRepository<Order>();
+                    var ordersRepository = new Db4ORepository<Order>();
                     var order = ordersRepository.First();
                     Assert.That(order.OrderDate, Is.Not.EqualTo(changedOrderDate));
                     Assert.That(order.ShipDate, Is.Not.EqualTo(changedShipDate));
@@ -154,7 +155,7 @@ namespace NCommon.Data.Db4o.Tests
                 testData.Batch(actions =>
                                actions.CreateOrderForCustomer(actions.CreateCustomer()));
 
-                var ordersRepository = new Db4oRepository<Order>();
+                var ordersRepository = new Db4ORepository<Order>();
                 var results = from order in ordersRepository
                               select new
                               {
@@ -186,7 +187,7 @@ namespace NCommon.Data.Db4o.Tests
                 });
 
                 var customersInPA = new Specification<Order>(x => x.Customer.Address.State == "PA");
-                var ordersRepository = new Db4oRepository<Order>();
+                var ordersRepository = new Db4ORepository<Order>();
                 var results = from order in ordersRepository.Query(customersInPA)
                               orderby order.OrderDate
                               select order;
@@ -211,7 +212,7 @@ namespace NCommon.Data.Db4o.Tests
 
                 var customersInPA = new Specification<Order>(x => x.Customer.Address.State == "DE");
 
-                var ordersRepository = new Db4oRepository<Order>();
+                var ordersRepository = new Db4ORepository<Order>();
                 var results = from order in ordersRepository.Query(customersInPA) select order;
 
                 Assert.That(results.Count(), Is.GreaterThan(0));
@@ -224,7 +225,7 @@ namespace NCommon.Data.Db4o.Tests
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var repository = new Db4oRepository<Customer>();
+                var repository = new Db4ORepository<Customer>();
                 repository.Add(new Customer());
             });
         }
@@ -251,7 +252,7 @@ namespace NCommon.Data.Db4o.Tests
 
             using (new UnitOfWorkScope())
             {
-                var customerRepository = new Db4oRepository<Customer>();
+                var customerRepository = new Db4ORepository<Customer>();
                 var recordCheckResult = (from cust in customerRepository
                                          where cust.FirstName == newCustomer.FirstName &&
                                                cust.LastName == newCustomer.LastName
@@ -264,7 +265,7 @@ namespace NCommon.Data.Db4o.Tests
             //Starting a completely new unit of work and repository to check for existance.
             using (var scope = new UnitOfWorkScope())
             {
-                var customerRepository = new Db4oRepository<Customer>();
+                var customerRepository = new Db4ORepository<Customer>();
                 var recordCheckResult = (from cust in customerRepository
                                          where cust.FirstName == newCustomer.FirstName &&
                                                cust.LastName == newCustomer.LastName
@@ -292,7 +293,7 @@ namespace NCommon.Data.Db4o.Tests
                 Address = newAddress
             };
 
-            var queryForCustomer = new Func<Db4oRepository<Customer>, Customer>
+            var queryForCustomer = new Func<Db4ORepository<Customer>, Customer>
                 (
                 x => (from cust in x
                       where cust.FirstName == newCustomer.FirstName && cust.LastName == newCustomer.LastName
@@ -301,7 +302,7 @@ namespace NCommon.Data.Db4o.Tests
 
             using (var scope = new UnitOfWorkScope())
             {
-                var customerRepository = new Db4oRepository<Customer>();
+                var customerRepository = new Db4ORepository<Customer>();
                 var recordCheckResult = queryForCustomer(customerRepository);
                 Assert.That(recordCheckResult, Is.Null);
 
@@ -312,7 +313,7 @@ namespace NCommon.Data.Db4o.Tests
             //Starting a completely new unit of work and repository to check for existance.
             using (var scope = new UnitOfWorkScope())
             {
-                var customerRepository = new Db4oRepository<Customer>();
+                var customerRepository = new Db4ORepository<Customer>();
                 var recordCheckResult = queryForCustomer(customerRepository);
                 Assert.That(recordCheckResult, Is.Not.Null);
                 Assert.That(recordCheckResult.FirstName, Is.EqualTo(newCustomer.FirstName));
@@ -333,7 +334,7 @@ namespace NCommon.Data.Db4o.Tests
                 int orderId;
                 using (var scope = new UnitOfWorkScope())
                 {
-                    var orderRepository = new Db4oRepository<Order>();
+                    var orderRepository = new Db4ORepository<Order>();
                     var order = orderRepository.FirstOrDefault();
                     Assert.That(order, Is.Not.Null);
                     orderId = order.OrderID;
@@ -344,7 +345,7 @@ namespace NCommon.Data.Db4o.Tests
 
                 using (new UnitOfWorkScope())
                 {
-                    var orderRepository = new Db4oRepository<Order>();
+                    var orderRepository = new Db4ORepository<Order>();
                     var order = (from o in orderRepository
                                  where o.OrderID == orderId
                                  select o).FirstOrDefault();
@@ -371,7 +372,7 @@ namespace NCommon.Data.Db4o.Tests
 
                 using (var uowScope = new UnitOfWorkScope())
                 {
-                    var ordersRepository = new Db4oRepository<Order>();
+                    var ordersRepository = new Db4ORepository<Order>();
                     var order = (from o in ordersRepository
                                  select o).First();
 
@@ -384,7 +385,7 @@ namespace NCommon.Data.Db4o.Tests
 
                 using (new UnitOfWorkScope())
                 {
-                    var ordersRepository = new Db4oRepository<Order>();
+                    var ordersRepository = new Db4ORepository<Order>();
                     var order = (from o in ordersRepository
                                  where o.OrderID == orderId
                                  select o).First();

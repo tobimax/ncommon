@@ -14,13 +14,12 @@
 //limitations under the License. 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Practices.ServiceLocation;
-using NCommon.Extensions;
 using NHibernate;
 using NHibernate.Linq;
-using NHibernate.Transform;
 
 namespace NCommon.Data.NHibernate
 {
@@ -45,8 +44,14 @@ namespace NCommon.Data.NHibernate
                 return;
 
             var sessions = ServiceLocator.Current.GetAllInstances<ISession>();
-            if (sessions != null && sessions.Count() > 0)
-                _privateSession = sessions.FirstOrDefault();
+
+            if (sessions != null)
+            {
+                var enumerable = sessions as List<ISession> ?? sessions.ToList();
+
+                if (enumerable.Any())
+                    _privateSession = enumerable.FirstOrDefault();
+            }
         }
 
         /// <summary>
@@ -77,12 +82,23 @@ namespace NCommon.Data.NHibernate
         }
 
         /// <summary>
+        /// Gets or sets the merge option.
+        /// </summary>
+        /// <value>The merge option.</value>
+        /// <remarks></remarks>
+        public override MergeOption MergeOption
+        {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
+        }
+
+        /// <summary>
         /// Adds a transient instance of <see cref="TEntity"/> to be tracked
         /// and persisted by the repository.
         /// </summary>
         /// <param name="entity"></param>
         /// <remarks>
-        /// The Add method replaces the existing <see cref="RepositoryBase{TEntity}.Save"/> method, which will
+        /// The Add method replaces the existing <see cref="RepositoryBase{TEntity}.Add"/> method, which will
         /// eventually be removed from the public API.
         /// </remarks>
         public override void Add(TEntity entity)
@@ -116,6 +132,43 @@ namespace NCommon.Data.NHibernate
         {
             Session.Update(entity);
         }
+
+        /// <summary>
+        /// Attaches a detached entity, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.
+        /// </summary>
+        /// <param name="entity">The modified entity instance to attach back to the repository.</param>
+        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
+        /// entities is not supported.</exception>
+        public override void Attach(TEntity entity, TEntity orignial)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Attaches a collection of detached entities, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.all.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entities">The entities.</param>
+        public override void AttachAll(IEnumerable<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                Session.Update(entity);
+            }
+        }
+
+        /// <summary>
+        /// Attaches a collection of detached entities as modified, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.all.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entities">The entities.</param>
+        /// <param name="asModified">if set to <c>true</c> [as modified].</param>
+        public override void AttachAll(IEnumerable<TEntity> entities, bool asModified)
+        {
+            throw new NotSupportedException();
+        }
+
 
         /// <summary>
         /// Refreshes a entity instance.

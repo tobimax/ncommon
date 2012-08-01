@@ -228,7 +228,7 @@ namespace NCommon.Data.EntityFramework.Tests
             using (var scope = new UnitOfWorkScope())
             {
                 new EFRepository<Customer>().Add(customer);
-                using (var scope2 = new UnitOfWorkScope(TransactionMode.Supress))
+                using (var scope2 = new UnitOfWorkScope(TransactionMode.Suppress))
                 {
                     new EFRepository<Order>().Add(order);
                     scope2.Commit();

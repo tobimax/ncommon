@@ -25,10 +25,11 @@ namespace NCommon.Data
         /// and should not start a transaction of its own.
         /// </summary>
         /// <remarks>
-        /// If a scope is created using the Supress option, any child scopes created with the default 
+        /// If a scope is created using the Suppress option, any child scopes created with the default 
         /// transaction mode, i.e. <see cref="Default"/> will also not participate in any transaction, although
         /// it will share the same parent <see cref="IUnitOfWork"/> instance.
         /// </remarks>
-        Supress = 2
+        Suppress = 2
     }
+
 }

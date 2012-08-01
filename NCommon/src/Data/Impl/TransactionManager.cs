@@ -80,7 +80,7 @@ namespace NCommon.Data.Impl
             var uowFactory = ServiceLocator.Current.GetInstance<IUnitOfWorkFactory>();
             if (_transactions.Count == 0 || 
                 mode == TransactionMode.New ||
-                mode == TransactionMode.Supress)
+                mode == TransactionMode.Suppress)
             {
                 _logger.Debug(x => x("Enlisting scope {0} with mode {1} requires a new TransactionScope to be created.", scope.ScopeId, mode));
                 var txScope = TransactionScopeHelper.CreateScope(UnitOfWorkSettings.DefaultIsolation, mode);

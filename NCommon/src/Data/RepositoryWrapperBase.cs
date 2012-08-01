@@ -12,7 +12,7 @@ namespace NCommon.Data
     /// </summary>
     /// <typeparam name="TRepository">The type of repository to wrap.</typeparam>
     /// <typeparam name="TEntity">The entity type of the repository.</typeparam>
-    public abstract class RepositoryWrapperBase<TRepository, TEntity> : IRepository<TEntity> where TRepository : IRepository<TEntity>
+    public abstract class RepositoryWrapperBase<TRepository, TEntity> : IRepository<TEntity> where TRepository : class, IRepository<TEntity>
     {
         readonly TRepository _rootRootRepository;
 
@@ -102,6 +102,18 @@ namespace NCommon.Data
         {
             return _rootRootRepository.UnitOfWork<T>();
         }
+        
+        /// <summary>
+        /// Determines the synchronization option for sending or receiving entities. 
+        /// </summary>
+        /// <value>
+        /// The merge option.
+        /// </value>
+        public MergeOption MergeOption
+        {
+            get { return _rootRootRepository.MergeOption; }
+            set { _rootRootRepository.MergeOption = value; }
+        }
 
         /// <summary>
         /// Adds a transient instance of <paramref name="entity"/> to be tracked
@@ -139,11 +151,37 @@ namespace NCommon.Data
         /// Attaches a detached entity, previously detached via the <see cref="IRepository{TEntity}.Detach"/> method.
         /// </summary>
         /// <param name="entity">The entity instance to attach back to the repository.</param>
-        /// <exception cref="NotSupportedException">Implentors should throw the NotImplementedException if Attaching
-        /// entities is not supported.</exception>
         public virtual void Attach(TEntity entity)
         {
             _rootRootRepository.Attach(entity);
+        }
+        /// <summary>
+        /// Attaches a detached entity, previously detached via the <see cref="Detach"/> method.
+        /// </summary>
+        /// <param name="entity">The modified entity instance to attach back to the repository.</param>
+        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
+        /// entities is not supported.</exception>
+        public virtual void Attach(TEntity entity, TEntity orignial)
+        {
+            _rootRootRepository.Attach(entity);
+        }
+        /// <summary>
+        /// Attaches a collection of detached entities, previously detached via the <see cref="Detach"/> method.all.
+        /// </summary>
+        /// <param name="entities">The entities.</param>
+        public virtual void AttachAll(IEnumerable<TEntity> entities)
+        {
+            _rootRootRepository.AttachAll(entities);
+        }
+        /// <summary>
+        /// Attaches a collection of detached entities as modified, previously detached via the <see cref="Detach"/> method.all.
+        /// </summary>
+        /// <param name="entities">The entities.</param>
+        /// <param name="asModified">if set to <c>true</c> [as modified].</param>
+        public virtual void AttachAll(IEnumerable<TEntity> entities, bool asModified)
+        {
+            _rootRootRepository.AttachAll(entities, true);
         }
 
         /// <summary>

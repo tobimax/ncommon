@@ -40,9 +40,9 @@ namespace NCommon.Data.Impl
                 Logger.Debug(x => x("Creating a new TransactionScope with TransactionScopeOption.RequiresNew"));
                 return new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = isolationLevel });
             }
-            if (txMode == TransactionMode.Supress)
+            if (txMode == TransactionMode.Suppress)
             {
-                Logger.Debug(x => x("Creating a new TransactionScope with TransactionScopeOption.Supress"));
+                Logger.Debug(x => x("Creating a new TransactionScope with TransactionScopeOption.Suppress"));
                 return new TransactionScope(TransactionScopeOption.Suppress);
             }
             Logger.Debug(x => x("Creating a new TransactionScope with TransactionScopeOption.Required"));

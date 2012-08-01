@@ -228,7 +228,7 @@ namespace NCommon.Data.LinqToSql.Tests
             using (var scope = new UnitOfWorkScope())
             {
                 new LinqToSqlRepository<Customer>().Add(customer);
-                using (var scope2 = new UnitOfWorkScope(TransactionMode.Supress))
+                using (var scope2 = new UnitOfWorkScope(TransactionMode.Suppress))
                 {
                     new LinqToSqlRepository<Order>().Add(order);
                     scope2.Commit();

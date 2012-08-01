@@ -50,7 +50,7 @@ namespace NCommon.Data.Db4o
         public void Configure(IContainerAdapter containerAdapter)
         {
             containerAdapter.Register<IUnitOfWorkFactory, Db4oUnitOfWorkFactory>();
-            containerAdapter.RegisterGeneric(typeof (IRepository<>), typeof (Db4oRepository<>));
+            containerAdapter.RegisterGeneric(typeof (IRepository<>), typeof (Db4ORepository<>));
             Db4oUnitOfWorkFactory.SetContainerProvider(_containerProvider);
         }
     }

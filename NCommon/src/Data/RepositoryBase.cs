@@ -32,6 +32,14 @@ namespace NCommon.Data
     public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
     {
         /// <summary>
+        /// Determines the synchronization option for sending or receiving entities. 
+        /// </summary>
+        /// <value>
+        /// The merge option.
+        /// </value>
+        public abstract MergeOption MergeOption { get; set; }
+
+        /// <summary>
         /// Gets the <see cref="IQueryable{TEntity}"/> used by the <see cref="RepositoryBase{TEntity}"/> 
         /// to execute Linq queries.
         /// </summary>
@@ -141,6 +149,28 @@ namespace NCommon.Data
         /// </summary>
         /// <param name="entity">The entity instance to attach back to the repository.</param>
         public abstract void Attach(TEntity entity);
+
+        /// <summary>
+        /// Attaches a detached entity, previously detached via the <see cref="Detach"/> method.
+        /// </summary>
+        /// <param name="entity">The modified entity instance to attach back to the repository.</param>
+        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
+        /// entities is not supported.</exception>
+        public abstract void Attach(TEntity entity, TEntity orignial);
+
+        /// <summary>
+        /// Attaches a collection of detached entities, previously detached via the <see cref="Detach"/> method.all.
+        /// </summary>
+        /// <param name="entities">The entities.</param>
+        public abstract void AttachAll(IEnumerable<TEntity> entities);
+
+        /// <summary>
+        /// Attaches a collection of detached entities as modified, previously detached via the <see cref="Detach"/> method.all.
+        /// </summary>
+        /// <param name="entities">The entities.</param>
+        /// <param name="asModified">if set to <c>true</c> [as modified].</param>
+        public abstract void AttachAll(IEnumerable<TEntity> entities, bool asModified);
 
         /// <summary>
         /// Refreshes a entity instance.
