@@ -25,8 +25,7 @@ namespace NCommon.EntityFramework4.Tests.POCO
             {
                 savedOrder = new EFRepository<Order>()
                     .Fetch(o => o.Customer)
-                    .Where(x => x.OrderID == order.OrderID)
-                    .SingleOrDefault();
+                    .SingleOrDefault(x => x.OrderID == order.OrderID);
                 scope.Commit();
             }
 

@@ -27,7 +27,7 @@ namespace NCommon.Data
     /// components should implement.
     /// </summary>
     /// <typeparam name="TEntity">The type of entity that the repository encapsulates.</typeparam>
-    public interface IRepository<TEntity> : IQueryable<TEntity>
+    public interface IRepository<TEntity> : IQueryable<TEntity> where TEntity : class
     {
         /// <summary>
         /// Determines the synchronization option for sending or receiving entities. 
@@ -36,7 +36,7 @@ namespace NCommon.Data
         /// The merge option.
         /// </value>
         MergeOption MergeOption { get; set; }
-        
+
         /// <summary>
         /// Gets the a <see cref="IUnitOfWork"/> of <typeparamref name="T"/> that
         /// the repository will use to query the underlying store.
@@ -107,14 +107,14 @@ namespace NCommon.Data
         void Refresh(TEntity entity);
 
         /// <summary>
-        /// Querries the repository based on the provided specification and returns results that
+        /// Queries the repository based on the provided specification and returns results that
         /// are only satisfied by the specification.
         /// </summary>
-        /// <param name="specification">A <see cref="ISpecification{TEntity}"/> instnace used to filter results
+        /// <param name="specification">A <see cref="ISpecification{TEntity}"/> instance used to filter results
         /// that only satisfy the specification.</param>
         /// <returns>A <see cref="IEnumerable{TEntity}"/> that can be used to enumerate over the results
         /// of the query.</returns>
-        IEnumerable<TEntity> Query(ISpecification<TEntity> specification);
+        IQueryable<TEntity> Query(ISpecification<TEntity> specification);
 
         /// <summary>
         /// Defines the service context under which the repository will execute.
@@ -126,5 +126,15 @@ namespace NCommon.Data
         /// the exact same instance.
         /// </remarks>
         IQueryable<TEntity> For<TService>();
+
+        /// <summary>
+        /// Queries the repository based on the provided specification and returns results that
+        /// are only satisfied by the specification and defines the service context under which the repository will execute.
+        /// </summary>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <param name="specification">The specification.</param>
+        /// <returns></returns>
+        IQueryable<TEntity> QueryFor<TService>(ISpecification<TEntity> specification);
+
     }
 }

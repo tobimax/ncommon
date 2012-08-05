@@ -212,7 +212,7 @@ namespace NCommon.Data.EntityFramework.Tests
                     Assert.That(results.Count(), Is.EqualTo(5));
                 }
             }
-        }
+        }           
 
         [Test]
         public void Can_lazyload()

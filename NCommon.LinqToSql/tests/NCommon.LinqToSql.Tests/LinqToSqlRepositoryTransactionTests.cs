@@ -47,8 +47,7 @@ namespace NCommon.Data.LinqToSql.Tests
                 using (new UnitOfWorkScope())
                 {
                     var savedCustomer = new LinqToSqlRepository<Customer>()
-                        .Where(x => x.CustomerID == customer.CustomerID)
-                        .First();
+                        .First(x => x.CustomerID == customer.CustomerID);
                     savedCustomer.LastName = "Changed";
                 } //Dispose here as scope is not comitted.
 

@@ -23,18 +23,18 @@ namespace NCommon.Data.LinqToSql.Tests
         public virtual void FixtureSetup()
         {
             var connectionString = ConfigurationManager.ConnectionStrings["testDb"].ConnectionString;
+            
             OrdersContextProvider = () =>
-            {
-                var ordersDataDataContext = new OrdersDataDataContext(connectionString);
-                ordersDataDataContext.DeferredLoadingEnabled = true;
-                return ordersDataDataContext;
-            };
+                {
+                    var ordersDataDataContext = new OrdersDataDataContext(connectionString) { DeferredLoadingEnabled = true };
+                    return ordersDataDataContext;
+                };
+
             HRContextProvider = () =>
-            {
-                var hrDataDataContext = new HRDataDataContext(connectionString);
-                hrDataDataContext.DeferredLoadingEnabled = true;
-                return hrDataDataContext;
-            };
+                {
+                    var hrDataDataContext = new HRDataDataContext(connectionString) { DeferredLoadingEnabled = true };
+                    return hrDataDataContext;
+                };
 
             UnitOfWorkFactory = new LinqToSqlUnitOfWorkFactory();
             UnitOfWorkFactory.RegisterDataContextProvider(OrdersContextProvider);

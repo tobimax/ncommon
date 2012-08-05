@@ -15,7 +15,7 @@ namespace NCommon.Data.LinqToSql.Tests
             using (var testData = new LinqToSqlTestData(OrdersContextProvider()))
             {
                 Order order = null;
-                Order savedOrder = null;
+                Order savedOrder;
 
                 testData.Batch(x => order = x.CreateOrderForCustomer(x.CreateCustomer()));
 
@@ -23,8 +23,7 @@ namespace NCommon.Data.LinqToSql.Tests
                 {
                     savedOrder = new LinqToSqlRepository<Order>()
                         .Fetch(o => o.Customer)
-                        .Where(x => x.OrderID == order.OrderID)
-                        .SingleOrDefault();
+                        .SingleOrDefault(x => x.OrderID == order.OrderID);
                     scope.Commit();
                 }
 
@@ -40,7 +39,7 @@ namespace NCommon.Data.LinqToSql.Tests
             using (var testData = new LinqToSqlTestData(OrdersContextProvider()))
             {
                 Customer customer = null;
-                Customer savedCustomer = null;
+                Customer savedCustomer;
                 testData.Batch(x =>
                 {
                     customer = x.CreateCustomer();
@@ -56,8 +55,7 @@ namespace NCommon.Data.LinqToSql.Tests
                         .FetchMany(x => x.Orders)
                         .ThenFetchMany(x => x.OrderItems)
                         .ThenFetch(x => x.Product)
-                        .Where(x => x.CustomerID == customer.CustomerID)
-                        .SingleOrDefault();
+                        .SingleOrDefault(x => x.CustomerID == customer.CustomerID);
                     scope.Commit();
                 }
 
@@ -80,7 +78,8 @@ namespace NCommon.Data.LinqToSql.Tests
             using (var testData = new LinqToSqlTestData(OrdersContextProvider()))
             {
                 Customer customer = null;
-                Customer savedCustomer = null;
+                Customer savedCustomer;
+
                 testData.Batch(x =>
                 {
                     customer = x.CreateCustomer();
@@ -94,8 +93,7 @@ namespace NCommon.Data.LinqToSql.Tests
                 {
                     savedCustomer = new LinqToSqlRepository<Customer>()
                         .For<LinqToSqlRepositoryEagerFetchingTests>()
-                        .Where(x => x.CustomerID == customer.CustomerID)
-                        .SingleOrDefault();
+                        .SingleOrDefault(x => x.CustomerID == customer.CustomerID);
                     scope.Commit();
                 }
 

@@ -16,11 +16,12 @@
 
 using System.Linq;
 using NCommon.Extensions;
+using NCommon.Rules;
 using NCommon.Specifications;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace NCommon.Rules.Tests
+namespace NCommon.Tests.Rules
 {
     /// <summary>
     /// Tests the <see cref="EntityValidatorBase{TEntity}"/>
@@ -41,21 +42,21 @@ namespace NCommon.Rules.Tests
         [Test]
         public void Validate_returns_two_validation_errors ()
         {
-            ISpecification<object> failedSpec1 = MockRepository.GenerateStub<ISpecification<object>>();
+            var failedSpec1 = MockRepository.GenerateStub<ISpecification<object>>();
             failedSpec1.Stub(x => x.IsSatisfiedBy(null)).IgnoreArguments().Return(false);
 
-            ISpecification<object> failedSpec2 = MockRepository.GenerateStub<ISpecification<object>>();
+            var failedSpec2 = MockRepository.GenerateStub<ISpecification<object>>();
             failedSpec2.Stub(x => x.IsSatisfiedBy(null)).IgnoreArguments().Return(false);
 
-            ISpecification<object> passedSpec = MockRepository.GenerateStub<ISpecification<object>>();
+            var passedSpec = MockRepository.GenerateStub<ISpecification<object>>();
             passedSpec.Stub(x => x.IsSatisfiedBy(null)).IgnoreArguments().Return(true);
 
-            MockEntityValidator validator = new MockEntityValidator();
+            var validator = new MockEntityValidator();
             validator.AddValidation("Failed Rule1", new ValidationRule<object>(failedSpec1, "Validation 1 Failed", "Validation1"));
             validator.AddValidation("Failed Rule2", new ValidationRule<object>(failedSpec2, "Validation 2 Failed", "Validation2"));
             validator.AddValidation("Passed Rule", new ValidationRule<object>(passedSpec, "Successfull Validation", "ShouldNotAppear"));
 
-            ValidationResult result = validator.Validate(new object());
+            var result = validator.Validate(new object());
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Errors.Count(), Is.GreaterThan(0));
             Assert.That(result.Errors.Count(), Is.EqualTo(2));

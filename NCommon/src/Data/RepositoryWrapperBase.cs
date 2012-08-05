@@ -12,7 +12,7 @@ namespace NCommon.Data
     /// </summary>
     /// <typeparam name="TRepository">The type of repository to wrap.</typeparam>
     /// <typeparam name="TEntity">The entity type of the repository.</typeparam>
-    public abstract class RepositoryWrapperBase<TRepository, TEntity> : IRepository<TEntity> where TRepository : class, IRepository<TEntity>
+    public abstract class RepositoryWrapperBase<TRepository, TEntity> : IRepository<TEntity> where TRepository : class, IRepository<TEntity> where TEntity : class
     {
         readonly TRepository _rootRootRepository;
 
@@ -102,7 +102,7 @@ namespace NCommon.Data
         {
             return _rootRootRepository.UnitOfWork<T>();
         }
-        
+
         /// <summary>
         /// Determines the synchronization option for sending or receiving entities. 
         /// </summary>
@@ -203,7 +203,7 @@ namespace NCommon.Data
         /// that only satisfy the specification.</param>
         /// <returns>A <see cref="IEnumerable{TEntity}"/> that can be used to enumerate over the results
         /// of the query.</returns>
-        public virtual IEnumerable<TEntity> Query(ISpecification<TEntity> specification)
+        public virtual IQueryable<TEntity> Query(ISpecification<TEntity> specification)
         {
             return _rootRootRepository.Query(specification);
         }
@@ -221,5 +221,18 @@ namespace NCommon.Data
         {
             return _rootRootRepository.For<TService>();
         }
+
+        /// <summary>
+        /// Queries the repository based on the provided specification and returns results that
+        /// are only satisfied by the specification and defines the service context under which the repository will execute.
+        /// </summary>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <param name="specification">The specification.</param>
+        /// <returns></returns>
+        public IQueryable<TEntity> QueryFor<TService>(ISpecification<TEntity> specification)
+        {
+            return _rootRootRepository.QueryFor<TService>(specification);
+        }
+
     }
 }

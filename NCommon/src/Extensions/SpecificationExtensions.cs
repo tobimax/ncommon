@@ -21,10 +21,39 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.Practices.ServiceLocation;
+using NCommon.Data;
 using NCommon.Specifications;
 
 namespace NCommon.Extensions
 {
+
+    //public static class QueryExtensions
+    //{
+
+
+    //    ///// <summary>
+    //    ///// Fors the specified specification.
+    //    ///// </summary>
+    //    ///// <typeparam name="TService">The type of the service.</typeparam>
+    //    ///// <typeparam name="TEntity">The type of the entity.</typeparam>
+    //    ///// <param name="specification">The specification.</param>
+    //    ///// <returns></returns>
+    //    //public static IQueryable<TEntity> For<TService,TEntity>(this ISpecification<TEntity> specification)
+    //    //{
+
+    //    //    var strategy = ServiceLocator
+    //    //        .Current
+    //    //        .GetAllInstances<IFetchingStrategy<TEntity, TService>>()
+    //    //        .FirstOrDefault();
+
+    //    //    return strategy != null
+    //    //               ? strategy.Define(this).Where(specification.Predicate).AsQueryable()
+    //    //               : this.Where(specification.Predicate).AsQueryable();
+    //    //}
+    //}
+
+
     ///<summary>
     /// Extension methods for <see cref="ISpecification{T}"/>.
     ///</summary>

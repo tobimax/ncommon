@@ -25,8 +25,9 @@ namespace NCommon.Data.EntityFramework
     /// </summary>
     public class EFUnitOfWorkFactory : IUnitOfWorkFactory
     {
-        EFSessionResolver _resolver = new EFSessionResolver();
+        readonly EFSessionResolver _resolver = new EFSessionResolver();
         
+        /// <summary>
         /// Registers a <see cref="Func{T}"/> of type <see cref="ObjectContext"/> provider that can be used
         /// to resolve instances of <see cref="ObjectContext"/>.
         /// </summary>

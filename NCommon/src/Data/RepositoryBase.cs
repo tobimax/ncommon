@@ -29,7 +29,7 @@ namespace NCommon.Data
     /// A base class for implementors of <see cref="IRepository{TEntity}"/>.
     ///</summary>
     ///<typeparam name="TEntity"></typeparam>
-    public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
+    public abstract class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class
     {
         /// <summary>
         /// Determines the synchronization option for sending or receiving entities. 
@@ -118,10 +118,11 @@ namespace NCommon.Data
             Guard.Against<InvalidOperationException>(currentScope == null,
                                                      "No compatible UnitOfWork was found. Please start a compatible UnitOfWorkScope before " +
                                                      "using the repository.");
-            
+
             Guard.TypeOf<T>(currentScope,
-                                              "The current UnitOfWork instance is not compatible with the repository. " +
-                                              "Please start a compatible unit of work before using the repository.");
+                            "The current UnitOfWork instance is not compatible with the repository. " +
+                            "Please start a compatible unit of work before using the repository.");
+
             return ((T)currentScope);
         }
 
@@ -179,14 +180,14 @@ namespace NCommon.Data
         public abstract void Refresh(TEntity entity);
 
         /// <summary>
-        /// Querries the repository based on the provided specification and returns results that
+        /// Queries the repository based on the provided specification and returns results that
         /// are only satisfied by the specification.
         /// </summary>
-        /// <param name="specification">A <see cref="ISpecification{TEntity}"/> instnace used to filter results
+        /// <param name="specification">A <see cref="ISpecification{TEntity}"/> instance used to filter results
         /// that only satisfy the specification.</param>
         /// <returns>A <see cref="IEnumerable{TEntity}"/> that can be used to enumerate over the results
         /// of the query.</returns>
-        public IEnumerable<TEntity> Query(ISpecification<TEntity> specification)
+        public IQueryable<TEntity> Query(ISpecification<TEntity> specification)
         {
             return RepositoryQuery.Where(specification.Predicate).AsQueryable();
         }
@@ -207,9 +208,32 @@ namespace NCommon.Data
                 .GetAllInstances<IFetchingStrategy<TEntity, TService>>()
                 .FirstOrDefault();
 
-            if (strategy != null)
-                return strategy.Define(this);
-            return this;
+            return strategy != null
+                       ? strategy.Define(this)
+                       : this;
         }
+
+        /// <summary>
+        /// Queries the repository based on the provided specification and returns results that
+        /// are only satisfied by the specification and defines the service context under which the repository will execute.
+        /// </summary>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <param name="specification">The specification.</param>
+        /// <returns></returns>
+        public IQueryable<TEntity> QueryFor<TService>(ISpecification<TEntity> specification)
+        {
+            
+            var strategy = ServiceLocator
+                .Current
+                .GetAllInstances<IFetchingStrategy<TEntity, TService>>()
+                .FirstOrDefault();
+
+            return strategy != null
+                       ? strategy.Define(this).Where(specification.Predicate).AsQueryable()
+                       : this.Where(specification.Predicate).AsQueryable();
+        }
+
+
     }
+
 }

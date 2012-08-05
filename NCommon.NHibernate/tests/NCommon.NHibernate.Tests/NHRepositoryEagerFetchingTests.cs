@@ -95,8 +95,7 @@ namespace NCommon.Data.NHibernate.Tests
                 {
                     savedCustomer = new NHRepository<Customer>()
                         .For<NHRepositoryEagerFetchingTests>()
-                        .Where(x => x.CustomerID == customer.CustomerID)
-                        .SingleOrDefault();
+                        .SingleOrDefault(x => x.CustomerID == customer.CustomerID);
 
                     scope.Commit();
                 }
