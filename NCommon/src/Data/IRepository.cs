@@ -80,10 +80,10 @@ namespace NCommon.Data
         /// Attaches a detached entity, previously detached via the <see cref="Detach"/> method.
         /// </summary>
         /// <param name="entity">The modified entity instance to attach back to the repository.</param>
-        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <param name="original">The original entity instance to attach back to the repository.</param>
         /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
         /// entities is not supported.</exception>
-        void Attach(TEntity entity, TEntity orignial);
+        void Attach(TEntity entity, TEntity original);
 
         /// <summary>
         /// Attaches a collection of detached entities, previously detached via the <see cref="Detach"/> method.all.

@@ -157,12 +157,12 @@ namespace NCommon.Data.LinqToSql
         /// Attaches a detached entity, previously detached via the <see cref="RepositoryBase{TEntity}.Detach"/> method.
         /// </summary>
         /// <param name="entity">The modified entity instance to attach back to the repository.</param>
-        /// <param name="orignial">The original entity instance to attach back to the repository.</param>
+        /// <param name="original">The original entity instance to attach back to the repository.</param>
         /// <exception cref="NotSupportedException">Implementors should throw the NotImplementedException if Attaching
         /// entities is not supported.</exception>
-        public override void Attach(TEntity entity, TEntity orignial)
+        public override void Attach(TEntity entity, TEntity original)
         {
-            Table.Attach(entity, orignial);
+            Table.Attach(entity, original);
         }
 
         /// <summary>

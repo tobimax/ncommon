@@ -72,6 +72,7 @@
       <HintPath>..\..\packages\NHibernate.3.3.1.4000\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -179,6 +180,7 @@
     <None Include="..\..\ncommon.snk">
       <Link>ncommon.snk</Link>
     </None>
+    <None Include="App.config" />
     <None Include="NCommon.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
